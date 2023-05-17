@@ -74,6 +74,10 @@ Dim On_count1 As Byte
 Dim On_count2 As Byte
 Dim On_count3 As Byte
 
+Dim Sec1 As Byte
+Dim Sec2 As Byte
+Dim Sec3 As Byte
+
 Dim Flag As Byte
 
 
@@ -122,7 +126,7 @@ Do
          Relay1 = 0
          Flag.0 = 0 : Flag.1 = 0
       Else
-         Off_count1 = Off_time1
+         Off_count1 = Off_time1 + 1
          On_count1 = On_time1
          Flag.0 = 1 : Flag.1 = 0
       End If
@@ -131,6 +135,7 @@ Do
          Waitms 10
          Reset Watchdog
       Loop Until Key1 = 0
+      Waitms 400
    End If
 
    If Key2 = 1 Then
@@ -140,7 +145,7 @@ Do
          Relay2 = 0
          Flag.2 = 0 : Flag.3 = 0
       Else
-         Off_count2 = Off_time1
+         Off_count2 = Off_time1 + 1
          On_count2 = On_time1
          Flag.2 = 1 : Flag.3 = 0
       End If
@@ -149,6 +154,7 @@ Do
          Waitms 10
          Reset Watchdog
       Loop Until Key2 = 0
+      waitms 400
    End If
 
    If Key3 = 1 Then
@@ -158,7 +164,7 @@ Do
          Relay3 = 0
          Flag.4 = 0 : Flag.5 = 0
       Else
-         Off_count3 = Off_time3
+         Off_count3 = Off_time3 + 1
          On_count3 = On_time3
          Flag.4 = 1 : Flag.5 = 0
       End If
@@ -167,16 +173,11 @@ Do
          Waitms 10
          Reset Watchdog
       Loop Until Key3 = 0
+      waitms 400
    End If
 
 
 
-   If On_count1 = 0 And Flag.0 = 1 And Flag.1 = 0 Then
-      Flag.0 = 0
-      Flag.1 = 1
-      Relay1 = 1
-      Print #1 , "Relay1 on"
-   End If
    If On_count1 = 0 And Flag.0 = 0 And Flag.1 = 1 Then
       Decr Off_count1
       On_count1 = 60
@@ -187,12 +188,13 @@ Do
          Print #1 , "Relay1 OFF"
       End If
    End If
-
-   If On_count2 = 0 And Flag.2 = 1 And Flag.3 = 0 Then
-      Flag.2 = 0
-      Flag.3 = 1
-      Relay2 = 1
+   If On_count1 = 0 And Flag.0 = 1 And Flag.1 = 0 Then
+      Flag.0 = 0
+      Flag.1 = 1
+      Relay1 = 1
+      Print #1 , "Relay1 on"
    End If
+
    If On_count2 = 0 And Flag.2 = 0 And Flag.3 = 1 Then
       Decr Off_count2
       On_count2 = 60
@@ -202,12 +204,12 @@ Do
          Relay2 = 0
       End If
    End If
-
-   If On_count3 = 0 And Flag.4 = 1 And Flag.5 = 0 Then
-      Flag.4 = 0
-      Flag.5 = 1
-      Relay3 = 1
+   If On_count2 = 0 And Flag.2 = 1 And Flag.3 = 0 Then
+      Flag.2 = 0
+      Flag.3 = 1
+      Relay2 = 1
    End If
+
    If On_count3 = 0 And Flag.4 = 0 And Flag.5 = 1 Then
       Decr Off_count3
       On_count3 = 60
@@ -216,6 +218,11 @@ Do
          Flag.5 = 0
          Relay3= 0
       End If
+   End If
+   If On_count3 = 0 And Flag.4 = 1 And Flag.5 = 0 Then
+      Flag.4 = 0
+      Flag.5 = 1
+      Relay3 = 1
    End If
 
 
@@ -240,15 +247,32 @@ Do
 
    Reset Watchdog
    Waitms 1
+
+   Secc = On_count1
+   Minn = Off_count1
+   Gosub Refresh
 Loop
 '****************************
 Timer_tick:
    Timer1 = 22335
-   Toggle Led1
+'   Toggle Led1
+   Incr Sec1
+   If Sec1 > 60 Then
+      Sec1 = 0
+      If On_count1 > 0 Then Decr On_count1
+   End If
 
-   If On_count1 > 0 Then Decr On_count1
-   If On_count2 > 0 Then Decr On_count2
-   If On_count3 > 0 Then Decr On_count3
+   Incr Sec2
+   If Sec2 > 60 Then
+      Sec2 = 0
+      If On_count2 > 0 Then Decr On_count2
+   End If
+
+   Incr Sec3
+   If Sec3 > 60 Then
+      Sec3 = 0
+      If On_count3 > 0 Then Decr On_count3
+   End If
 
 Return
 '****************************
