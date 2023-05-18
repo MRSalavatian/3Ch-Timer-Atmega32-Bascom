@@ -182,6 +182,7 @@ Do
          Flag.0 = 0
          Flag.1 = 0
          Relay1 = 0
+         Led1 = 0
          Print #1 , "Relay1 OFF"
       End If
    End If
@@ -199,6 +200,7 @@ Do
          Flag.2 = 0
          Flag.3 = 0
          Relay2 = 0
+         Led2 = 0
          Print #1 , "Relay2 OFF"
       End If
    End If
@@ -216,6 +218,7 @@ Do
          Flag.4 = 0
          Flag.5 = 0
          Relay3 = 0
+         led3=0
          Print #1 , "Relay3 OFF"
       End If
    End If
@@ -256,7 +259,6 @@ Loop
 '****************************
 Timer_tick:
    Timer1 = 22335
-'   Toggle Led1
    Incr Sec1
    If Sec1 > 60 Then
       Sec1 = 0
@@ -274,6 +276,10 @@ Timer_tick:
       Sec3 = 0
       If On_count3 > 0 Then Decr On_count3
    End If
+
+   If On_count1 > 0 Then Toggle Led1
+   If On_count2 > 0 Then Toggle Led2
+   If On_count3 > 0 Then Toggle Led3
 
 Return
 '****************************
