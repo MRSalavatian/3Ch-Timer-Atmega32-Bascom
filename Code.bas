@@ -109,10 +109,7 @@ Do
          Toggle Led3
          If I > 15 Then
             Led1 = 1 : Led2 = 1 : Led3 = 1
-            Do
-               Waitms 10
-               Reset Watchdog
-            Loop Until Okk = 0
+            Gosub Ok_key_release
             Goto Menu
          End If
       Loop Until Okk = 0
@@ -154,7 +151,7 @@ Do
          Waitms 10
          Reset Watchdog
       Loop Until Key2 = 0
-      waitms 400
+      Waitms 400
    End If
 
    If Key3 = 1 Then
@@ -173,7 +170,7 @@ Do
          Waitms 10
          Reset Watchdog
       Loop Until Key3 = 0
-      waitms 400
+      Waitms 400
    End If
 
 
@@ -202,12 +199,14 @@ Do
          Flag.2 = 0
          Flag.3 = 0
          Relay2 = 0
+         Print #1 , "Relay2 OFF"
       End If
    End If
    If On_count2 = 0 And Flag.2 = 1 And Flag.3 = 0 Then
       Flag.2 = 0
       Flag.3 = 1
       Relay2 = 1
+      Print #1 , "Relay2 on"
    End If
 
    If On_count3 = 0 And Flag.4 = 0 And Flag.5 = 1 Then
@@ -216,13 +215,15 @@ Do
       If Off_count3 = 0 Then
          Flag.4 = 0
          Flag.5 = 0
-         Relay3= 0
+         Relay3 = 0
+         Print #1 , "Relay3 OFF"
       End If
    End If
    If On_count3 = 0 And Flag.4 = 1 And Flag.5 = 0 Then
       Flag.4 = 0
       Flag.5 = 1
       Relay3 = 1
+      Print #1 , "Relay3 on"
    End If
 
 
@@ -278,67 +279,43 @@ Return
 '****************************
 Menu:
    Led1 = 1 : Led2 = 0 : Led3 = 0
-   Minn = 0 : Secc = Off_time1
+   Minn = 0 : Secc = On_time1
    Gosub Get_value_sec
-   Off_time1 = Secc
-   Eram_off_time1 = Secc
-   Do
-      Waitms 10
-      Reset Watchdog
-   Loop Until Okk = 0
-   Waitms 300
+   On_time1 = Secc
+   Eram_on_time1 = Secc
+   Gosub Ok_key_release
 
-   Minn = On_time1 : Secc = 0
+   Minn = Off_time1 : Secc = 0
    Gosub Get_value_min
-   On_time1 = Minn
-   Eram_on_time1 = Minn
-   Do
-      Waitms 10
-      Reset Watchdog
-   Loop Until Okk = 0
-   Waitms 300
+   Off_time1 = Minn
+   Eram_off_time1 = Minn
+   Gosub Ok_key_release
 
    Led1 = 0 : Led2 = 1 : Led3 = 0
-   Minn = 0 : Secc = Off_time2
+   Minn = 0 : Secc = On_time2
    Gosub Get_value_sec
-   Off_time2 = Secc
-   Eram_off_time2 = Secc
-   Do
-      Waitms 10
-      Reset Watchdog
-   Loop Until Okk = 0
-   Waitms 300
+   On_time2 = Secc
+   Eram_on_time2 = Secc
+   Gosub Ok_key_release
 
-   Minn = On_time2 : Secc = 0
+   Minn = Off_time2 : Secc = 0
    Gosub Get_value_min
-   On_time2 = Minn
-   Eram_on_time2 = Minn
-   Do
-      Waitms 10
-      Reset Watchdog
-   Loop Until Okk = 0
-   Waitms 300
+   Off_time2 = Minn
+   Eram_off_time2 = Minn
+   Gosub Ok_key_release
 
    Led1 = 0 : Led2 = 0 : Led3 = 1
-   Minn = 0 : Secc = Off_time3
+   Minn = 0 : Secc = On_time3
    Gosub Get_value_sec
-   Off_time3 = Secc
-   Eram_off_time3 = Secc
-   Do
-      Waitms 10
-      Reset Watchdog
-   Loop Until Okk = 0
-   Waitms 300
+   On_time3 = Secc
+   Eram_on_time3 = Secc
+   Gosub Ok_key_release
 
-   Minn = On_time3 : Secc = 0
+   Minn = Off_time3 : Secc = 0
    Gosub Get_value_min
-   On_time3 = Minn
-   Eram_on_time3 = Minn
-   Do
-      Waitms 10
-      Reset Watchdog
-   Loop Until Okk = 0
-   Waitms 300
+   Off_time3 = Minn
+   Eram_off_time3 = Minn
+   Gosub Ok_key_release
 
 Goto Main
 
@@ -387,6 +364,14 @@ Get_value_min:
 
       If Okk = 1 Then Exit Do
    Loop
+Return
+'****************************
+Ok_key_release:
+  Do
+     Waitms 10
+     Reset Watchdog
+  Loop Until Okk = 0
+  Waitms 300
 Return
 '****************************
 Refresh:
@@ -514,7 +499,6 @@ Refreshseg:
    End If
 Return
 '****************************
-
 
 
 
