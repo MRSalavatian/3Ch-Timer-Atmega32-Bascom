@@ -218,7 +218,7 @@ Do
          Flag.4 = 0
          Flag.5 = 0
          Relay3 = 0
-         led3=0
+         Led3 = 0
          Print #1 , "Relay3 OFF"
       End If
    End If
