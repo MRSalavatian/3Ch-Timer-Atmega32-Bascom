@@ -36,6 +36,7 @@ Key3 Alias Pinb.5 : Config Key3 = Input
 Relay1 Alias Portb.2 : Config Relay1 = Output
 Relay2 Alias Portb.3 : Config Relay2 = Output
 Relay3 Alias Portb.4 : Config Relay3 = Output
+Buzzer Alias Porta.7 : Config Buzzer = Output
 
 Up Alias Pind.0 : Config Up = Input
 Down Alias Pind.1 : Config Down = Input
@@ -95,6 +96,7 @@ On_time3 = Eram_on_time3
 Main:
 Led1 = 0 : Led2 = 0 : Led3 = 0
 Start Timer1
+Gosub Beep
 Do
 
    If Okk = 1 Then
@@ -109,6 +111,7 @@ Do
          Toggle Led3
          If I > 15 Then
             Led1 = 1 : Led2 = 1 : Led3 = 1
+            Gosub Beep
             Gosub Ok_key_release
             Goto Menu
          End If
@@ -117,13 +120,14 @@ Do
    End If
 
    If Key1 = 1 Then
+      Gosub Beep
       If On_count1 > 0 Or Off_count1 > 0 Then
          Off_count1 = 0
          On_count1 = 0
          Relay1 = 0
          Flag.0 = 0 : Flag.1 = 0
       Else
-         Off_count1 = Off_time1 + 1
+         Off_count1 = Off_time1
          On_count1 = On_time1
          Flag.0 = 1 : Flag.1 = 0
       End If
@@ -136,13 +140,14 @@ Do
    End If
 
    If Key2 = 1 Then
+      Gosub Beep
       If On_count2 > 0 Or Off_count2 > 0 Then
          Off_count2 = 0
          On_count2 = 0
          Relay2 = 0
          Flag.2 = 0 : Flag.3 = 0
       Else
-         Off_count2 = Off_time1 + 1
+         Off_count2 = Off_time1
          On_count2 = On_time1
          Flag.2 = 1 : Flag.3 = 0
       End If
@@ -155,13 +160,14 @@ Do
    End If
 
    If Key3 = 1 Then
+      Gosub Beep
       If On_count3 > 0 Or Off_count3 > 0 Then
          Off_count3 = 0
          On_count3 = 0
          Relay3 = 0
          Flag.4 = 0 : Flag.5 = 0
       Else
-         Off_count3 = Off_time3 + 1
+         Off_count3 = Off_time3
          On_count3 = On_time3
          Flag.4 = 1 : Flag.5 = 0
       End If
@@ -256,6 +262,15 @@ Do
    Minn = Off_count1
    Gosub Refresh
 Loop
+'****************************
+Beep:
+   For I = 1 To 3
+      Buzzer = 1
+      Waitms 60
+      Buzzer = 0
+      Waitms 60
+   Next I
+Return
 '****************************
 Timer_tick:
    Timer1 = 22335
@@ -505,7 +520,6 @@ Refreshseg:
    End If
 Return
 '****************************
-
 
 
 
