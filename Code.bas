@@ -46,6 +46,7 @@ Dim I As Word
 Dim Ii As Word
 Dim Digit As Word
 Dim Count As Word
+Dim Tick As Bit
 
 Dim Minn As Byte
 Dim Secc As Byte
@@ -68,9 +69,9 @@ Dim Eram_on_time2 As Eram Byte
 Dim Eram_off_time3 As Eram Byte
 Dim Eram_on_time3 As Eram Byte
 
-Dim Tim_counter1 As Word
-Dim Tim_counter2 As Word
-Dim Tim_counter3 As Word
+Dim Time_counter1 As Word
+Dim Time_counter2 As Word
+Dim Time_counter3 As Word
 
 
 Dim Sec1 As Byte
@@ -92,7 +93,7 @@ On_time2 = Eram_on_time2
 On_time3 = Eram_on_time3
 '****************************
 Main:
-Led1 = 0 : Led2 = 0 : Led3 = 0
+Led1 = 0 : Led2 = 0 : Led3 = 0 : Dot = 0
 Start Timer1
 Gosub Beep
 Do
@@ -111,6 +112,7 @@ Do
             Led1 = 1 : Led2 = 1 : Led3 = 1
             Gosub Beep
             Gosub Ok_key_release
+            Dot = 1
             Goto Menu
          End If
       Loop Until Okk = 0
@@ -119,15 +121,93 @@ Do
 
    If Key1 = 1 Then
       Gosub Beep
-
-
-
+      Flag.0 = 1 : Flag.1 = 0
+      Time_counter1 = On_time1
       Do
          Waitms 10
          Reset Watchdog
       Loop Until Key1 = 0
       Waitms 400
    End If
+
+
+   If Key2 = 1 Then
+      Gosub Beep
+      Flag.2 = 1 : Flag.3 = 0
+      Time_counter2 = On_time2
+      Do
+         Waitms 10
+         Reset Watchdog
+      Loop Until Key2 = 0
+      Waitms 400
+   End If
+
+
+   If Key3 = 1 Then
+      Gosub Beep
+      Flag.4 = 1 : Flag.5 = 0
+      Time_counter3 = On_time3
+      Do
+         Waitms 10
+         Reset Watchdog
+      Loop Until Key3 = 0
+      Waitms 400
+   End If
+
+   If Time_counter1 = 0 Then
+      If Flag.0 = 0 And Flag.1 = 1 Then
+         Relay1 = 0
+         Flag.0 = 0 : Flag.1 = 0
+         Led1 = 0
+         Print #1 , "Relay1=off"
+      End If
+
+      If Flag.0 = 1 And Flag.1 = 0 Then
+         Relay1 = 1
+         Time_counter1 = Off_time1 * 60
+         Flag.0 = 0 : Flag.1 = 1
+
+         Print #1 , "Relay1=on  T="; Time_counter1
+      End If
+   End If
+
+
+   If Time_counter2 = 0 Then
+      If Flag.2 = 0 And Flag.3 = 1 Then
+         Relay2 = 0
+         Led2 = 0
+         Flag.2 = 0 : Flag.3 = 0
+         Print #1 , "Relay2=off"
+      End If
+
+      If Flag.2 = 1 And Flag.3 = 0 Then
+         Relay2 = 1
+         Time_counter2 = Off_time2 * 60
+         Flag.2 = 0 : Flag.3 = 1
+
+         Print #1 , "Relay2=on  T="; Time_counter2
+      End If
+   End If
+
+   If Time_counter3 = 0 Then
+      If Flag.4 = 0 And Flag.5 = 1 Then
+         Relay3 = 0
+         Led3 = 0
+         Flag.4 = 0 : Flag.5 = 0
+         Print #1 , "Relay3=off"
+      End If
+
+      If Flag.4 = 1 And Flag.5 = 0 Then
+         Relay3 = 1
+         Time_counter3 = Off_time3 * 60
+         Flag.4 = 0 : Flag.5 = 1
+
+         Print #1 , "Relay3=on  T=" ; Time_counter3
+      End If
+   End If
+
+
+
 
    If Key2 = 1 Then
       Gosub Beep
@@ -155,9 +235,9 @@ Do
    If Up = 1 Then
       Print #1 ,
       Print #1 ,
-      Print #1 , "1)On=" ; ; "   Off=" ; ; "  Relay=" ; Relay1 ; "  Flag=" ; Flag.0 ; Flag.1
-      Print #1 , "2)On=" ; ; "   Off=" ; ; "  Relay=" ; Relay2 ; "  Flag=" ; Flag.2 ; Flag.3
-      Print #1 , "3)On=" ; ; "   Off=" ; ; "  Relay=" ; Relay3 ; "  Flag=" ; Flag.4 ; Flag.5
+      Print #1 , "1)On=" ; ; "   Off=" ; Time_counter1; "  Relay=" ; Relay1 ; "  Flag=" ; Flag.0 ; Flag.1
+      Print #1 , "2)On=" ; ; "   Off=" ; Time_counter2 ; "  Relay=" ; Relay2 ; "  Flag=" ; Flag.2 ; Flag.3
+      Print #1 , "3)On=" ; ; "   Off=" ; Time_counter3 ; "  Relay=" ; Relay3 ; "  Flag=" ; Flag.4 ; Flag.5
       Print #1 , "************ COUNT ************"
       Waitms 500
    End If
@@ -170,13 +250,37 @@ Do
       Print #1 , "************ TIME ************"
       Waitms 500
    End If
-
-   Reset Watchdog
    Waitms 1
+   Reset Watchdog
 
-   Secc = 1
-   Minn = 1
+      Secc = Time_counter1 Mod 100
+      Minn = Time_counter1 / 100
    Gosub Refresh
+
+'(
+
+   Incr Count
+   If Count > 1000 Then Incr Digit
+   If Digit > 3 Then Digit = 1
+   If Digit = 1 And Time_counter1 > 0 Then
+      Secc = Time_counter1 Mod 100
+      Minn = Time_counter1 / 100
+      Led1 = 1
+   End If
+
+   If Digit = 2 And Time_counter2 > 0 Then
+      Secc = Time_counter2 Mod 100
+      Minn = Time_counter2 / 100
+      Led2 = 1
+   End If
+
+   If Digit = 3 And Time_counter3 > 0 Then
+      Secc = Time_counter3 Mod 100
+      Minn = Time_counter3 / 100
+      Led3 = 1
+   End If
+')
+
 Loop
 '****************************
 Beep:
@@ -190,25 +294,30 @@ Return
 '****************************
 Timer_tick:
    Timer1 = 22335
-   Decr Sec1
+   Toggle Tick
+
    If Sec1 = 0 Then
       Sec1 = 60
+      If Time_counter1 > 0 Then Decr Time_counter1
    End If
+   Decr Sec1
 
-   Decr Sec2
    If Sec2 = 0 Then
       Sec2 = 60
+      If Time_counter2 > 0 Then Decr Time_counter2
    End If
+   Decr Sec2
 
-   Incr Sec3
    If Sec3 = 0 Then
       Sec3 = 60
+      If Time_counter3 > 0 Then Decr Time_counter3
    End If
+   Incr Sec3
 
-'   If On_count1 > 0 Then Toggle Led1
-'   If On_count2 > 0 Then Toggle Led2
-'   If On_count3 > 0 Then Toggle Led3
-
+   If Time_counter1 > 0 Then Led1 = Tick
+   If Time_counter2 > 0 Then Led2  = Tick
+   If Time_counter3 > 0 Then Led3    = Tick
+                                   
 Return
 '****************************
 Menu:
