@@ -68,12 +68,10 @@ Dim Eram_on_time2 As Eram Byte
 Dim Eram_off_time3 As Eram Byte
 Dim Eram_on_time3 As Eram Byte
 
-Dim Off_count1 As Byte
-Dim Off_count2 As Byte
-Dim Off_count3 As Byte
-Dim On_count1 As Byte
-Dim On_count2 As Byte
-Dim On_count3 As Byte
+Dim Tim_counter1 As Word
+Dim Tim_counter2 As Word
+Dim Tim_counter3 As Word
+
 
 Dim Sec1 As Byte
 Dim Sec2 As Byte
@@ -121,16 +119,8 @@ Do
 
    If Key1 = 1 Then
       Gosub Beep
-      If On_count1 > 0 Or Off_count1 > 0 Then
-         Off_count1 = 0
-         On_count1 = 0
-         Relay1 = 0
-         Flag.0 = 0 : Flag.1 = 0
-      Else
-         Off_count1 = Off_time1
-         On_count1 = On_time1
-         Flag.0 = 1 : Flag.1 = 0
-      End If
+
+
 
       Do
          Waitms 10
@@ -141,16 +131,6 @@ Do
 
    If Key2 = 1 Then
       Gosub Beep
-      If On_count2 > 0 Or Off_count2 > 0 Then
-         Off_count2 = 0
-         On_count2 = 0
-         Relay2 = 0
-         Flag.2 = 0 : Flag.3 = 0
-      Else
-         Off_count2 = Off_time1
-         On_count2 = On_time1
-         Flag.2 = 1 : Flag.3 = 0
-      End If
 
       Do
          Waitms 10
@@ -161,16 +141,6 @@ Do
 
    If Key3 = 1 Then
       Gosub Beep
-      If On_count3 > 0 Or Off_count3 > 0 Then
-         Off_count3 = 0
-         On_count3 = 0
-         Relay3 = 0
-         Flag.4 = 0 : Flag.5 = 0
-      Else
-         Off_count3 = Off_time3
-         On_count3 = On_time3
-         Flag.4 = 1 : Flag.5 = 0
-      End If
 
       Do
          Waitms 10
@@ -181,67 +151,13 @@ Do
 
 
 
-   If On_count1 = 0 And Flag.0 = 0 And Flag.1 = 1 Then
-      Decr Off_count1
-      On_count1 = 60
-      If Off_count1 = 0 Then
-         Flag.0 = 0
-         Flag.1 = 0
-         Relay1 = 0
-         Led1 = 0
-         Print #1 , "Relay1 OFF"
-      End If
-   End If
-   If On_count1 = 0 And Flag.0 = 1 And Flag.1 = 0 Then
-      Flag.0 = 0
-      Flag.1 = 1
-      Relay1 = 1
-      Print #1 , "Relay1 on"
-   End If
-
-   If On_count2 = 0 And Flag.2 = 0 And Flag.3 = 1 Then
-      Decr Off_count2
-      On_count2 = 60
-      If Off_count2 = 0 Then
-         Flag.2 = 0
-         Flag.3 = 0
-         Relay2 = 0
-         Led2 = 0
-         Print #1 , "Relay2 OFF"
-      End If
-   End If
-   If On_count2 = 0 And Flag.2 = 1 And Flag.3 = 0 Then
-      Flag.2 = 0
-      Flag.3 = 1
-      Relay2 = 1
-      Print #1 , "Relay2 on"
-   End If
-
-   If On_count3 = 0 And Flag.4 = 0 And Flag.5 = 1 Then
-      Decr Off_count3
-      On_count3 = 60
-      If Off_count3 = 0 Then
-         Flag.4 = 0
-         Flag.5 = 0
-         Relay3 = 0
-         Led3 = 0
-         Print #1 , "Relay3 OFF"
-      End If
-   End If
-   If On_count3 = 0 And Flag.4 = 1 And Flag.5 = 0 Then
-      Flag.4 = 0
-      Flag.5 = 1
-      Relay3 = 1
-      Print #1 , "Relay3 on"
-   End If
-
 
    If Up = 1 Then
       Print #1 ,
       Print #1 ,
-      Print #1 , "1)On=" ; On_count1 ; "   Off=" ; Off_count1 ; "  Relay=" ; Relay1 ; "  Flag=" ; Flag.0 ; Flag.1
-      Print #1 , "2)On=" ; On_count2 ; "   Off=" ; Off_count2 ; "  Relay=" ; Relay2 ; "  Flag=" ; Flag.2 ; Flag.3
-      Print #1 , "3)On=" ; On_count3 ; "   Off=" ; Off_count3 ; "  Relay=" ; Relay3 ; "  Flag=" ; Flag.4 ; Flag.5
+      Print #1 , "1)On=" ; ; "   Off=" ; ; "  Relay=" ; Relay1 ; "  Flag=" ; Flag.0 ; Flag.1
+      Print #1 , "2)On=" ; ; "   Off=" ; ; "  Relay=" ; Relay2 ; "  Flag=" ; Flag.2 ; Flag.3
+      Print #1 , "3)On=" ; ; "   Off=" ; ; "  Relay=" ; Relay3 ; "  Flag=" ; Flag.4 ; Flag.5
       Print #1 , "************ COUNT ************"
       Waitms 500
    End If
@@ -258,8 +174,8 @@ Do
    Reset Watchdog
    Waitms 1
 
-   Secc = On_count1
-   Minn = Off_count1
+   Secc = 1
+   Minn = 1
    Gosub Refresh
 Loop
 '****************************
@@ -274,27 +190,24 @@ Return
 '****************************
 Timer_tick:
    Timer1 = 22335
-   Incr Sec1
-   If Sec1 > 60 Then
-      Sec1 = 0
-      If On_count1 > 0 Then Decr On_count1
+   Decr Sec1
+   If Sec1 = 0 Then
+      Sec1 = 60
    End If
 
-   Incr Sec2
-   If Sec2 > 60 Then
-      Sec2 = 0
-      If On_count2 > 0 Then Decr On_count2
+   Decr Sec2
+   If Sec2 = 0 Then
+      Sec2 = 60
    End If
 
    Incr Sec3
-   If Sec3 > 60 Then
-      Sec3 = 0
-      If On_count3 > 0 Then Decr On_count3
+   If Sec3 = 0 Then
+      Sec3 = 60
    End If
 
-   If On_count1 > 0 Then Toggle Led1
-   If On_count2 > 0 Then Toggle Led2
-   If On_count3 > 0 Then Toggle Led3
+'   If On_count1 > 0 Then Toggle Led1
+'   If On_count2 > 0 Then Toggle Led2
+'   If On_count3 > 0 Then Toggle Led3
 
 Return
 '****************************
@@ -520,7 +433,6 @@ Refreshseg:
    End If
 Return
 '****************************
-
 
 
 
